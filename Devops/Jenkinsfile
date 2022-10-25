@@ -1,0 +1,476 @@
+node('HQINSTALLSHIELD01')
+{
+
+	stage('Create_Configuration') {
+
+			bat """
+			@echo off
+			(
+		    echo "CREATE_RELEASE=F:\\jenkins\\workspace\\LeoPrj\\scripts\\VersionControl\\createversion.bat"
+			echo "JENKINS_PATH=F:\\jenkins\\workspace\\LeoPrj"
+			echo GIT_PATH=http://"admin:admin"@xx.xx.xx.xx/sergey-group/Devops.git
+			echo GIT_PATH_UNIFIED=http://"admin:admin"@xx.xx.xx.xx/unified-group/unified.git
+			echo GIT_PATH_LEO=http://"admin:admin"@xx.xx.xx.xx/leo-group/Leo.git
+			echo "LOG_PATH=F:\\jenkins\\workspace\\LeoPrj\\BuildLogs"	
+		    echo "SEND_MANAGER_MAIL=F:\\jenkins\\workspace\\LeoPrj\\scripts\\sendmail\\send_html_manager.py"
+			echo "SEND_REPORT_MAIL=F:\\jenkins\\workspace\\LeoPrj\\scripts\\sendmail\\send_html_mail.py"
+			echo "SEND_REPORT_MAIL_LEO=F:\\jenkins\\workspace\\LeoPrj\\scripts\\sendmail\\leo_send_html_mail.py"
+			echo "SonarCaUnified_PATH=F:\\jenkins\\workspace\\LeoPrj\\scripts\\SonarCa\\unified.bat"
+			echo "JENKINS_SCRIPT_BACKEND=F:\\jenkins\\workspace\\LeoPrj\\unified\\backend"
+			echo "JENKINS_SCRIPT_FRONTED=F:\\jenkins\\workspace\\LeoPrj\\unified\\frontend"	
+			echo "VS_PATH=C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\IDE\\devenv.exe"	
+			echo "JENKINS_PATH_MPLAB=F:\\jenkins\\workspace\\LeoPrj\\scripts\\embedded"
+			echo "JENKINS_PATH_VERSION=F:\\jenkins\\workspace\\LeoPrj\\scripts\\VersionControl"
+			echo "JENKINS_PATH_ARCHIVE=F:\\jenkins\\workspace\\archive"	
+			echo "DELETE_PATH=F:\\jenkins\\workspace"	
+			echo "SONAR_REPORT=D:\\soft\\SonarWindows\\sonarqube-developer-9.3.0.51899\\sonarqube-9.3.0.51899\\extensions\\plugins\\sonar-cnes-report-4.1.0.jar"
+			echo "PSTOOLS=D:\\Soft\\PSTools\\PsExec64.exe"
+			echo "PSTOOLSSHUTDOWN=D:\\Soft\\PSTools\\psshutdown.exe"
+			echo "WORKSPACE=F:\\jenkins\\workspace"
+			echo "NSIS=C:\\Program Files (x86)\\NSIS\\makensis.exe"
+			echo "LEOPACKAGES=F:\\jenkins\\workspace\\archive\\Leopackages"
+			)>"F:\\jenkins\\workspace\\Config\\leo.txt"
+			"""
+		}
+
+	
+	stage('Create_Version_Number') {
+		try{		
+	    bat """
+			@echo off
+			echo ============= The begin Version stage =============
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)	
+			if exist "%JENKINS_PATH%\\unified" (
+			robocopy "%JENKINS_PATH%\\unified" "%WORKSPACE%\\trash\\unified1" /E /MOVE	
+			)
+			if exist "%JENKINS_PATH%" rd /S /Q "%JENKINS_PATH%"			
+			if not exist %JENKINS_PATH% mkdir %JENKINS_PATH%
+			cd /d %JENKINS_PATH%
+			git clone -b Leo --single-branch %GIT_PATH%
+			move "%JENKINS_PATH%\\Devops\\scripts" %JENKINS_PATH%			
+			if exist "%JENKINS_PATH%\\Devops" rd /S /Q "%JENKINS_PATH%\\Devops"
+			set "VERSION=1.0.0.0"
+			if not exist "\\\\10.11.235.33\\d\\Dashboardversion\\LeoPrj" mkdir "\\\\10.11.235.33\\d\\Dashboardversion\\LeoPrj"
+			echo %VERSION%	> \\\\10.11.235.33\\d\\Dashboardversion\\LeoPrj\\version.txt
+			echo %VERSION%	> "%JENKINS_PATH%\\version.txt
+			rem %CREATE_RELEASE%
+			echo =========== The END Clean Archive stage ===========	
+		"""
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Create_Version_Number"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e
+    }
+	}
+
+
+	stage('Git_Clone_Leo') {
+		try{		
+	    bat """
+			@echo off
+			echo ========== The begin clonning git stage ===========
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)				
+	    	if not exist %JENKINS_PATH% mkdir %JENKINS_PATH%
+			if not exist "%LOG_PATH%" mkdir "%LOG_PATH%"
+			echo run clonning git!!!
+			cd /d %JENKINS_PATH%
+			git clone -b develop --single-branch %GIT_PATH_LEO%	
+			echo finished clonning git!!!
+			echo ======= The END finished clonning git stage =======
+		"""
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Git_Clone_Leo"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e
+    }
+
+	}
+
+	stage('Git_Clone_Unified') {
+		try{		
+	    bat """
+			@echo off
+			echo ========== The begin clonning git stage ===========
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+			if not exist "%LOG_PATH%" mkdir "%LOG_PATH%"
+			cd /d "%JENKINS_PATH%"
+			git clone -b develop --single-branch %GIT_PATH_UNIFIED%								
+			echo finished clonning git!!!
+			echo ======= The END finished clonning git stage =======
+		"""
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Git_Clone_Unified"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e
+    }
+
+	}
+
+
+	stage('Unit_Test') {
+		try{		
+	    bat """
+			@echo off
+			echo ============ The begin Unit test stage ============
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)		
+			echo ============= The END Unit test stage =============
+		"""
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Unit_Test"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e		
+    }
+	}
+
+	stage('Build_Java_Backend') {
+		try{		
+	    bat """
+			@echo off
+			echo ======== The begin build Java Backend stage =======
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)					
+			set CI=false
+			cd /d %JENKINS_SCRIPT_BACKEND%
+			
+			"%JENKINS_SCRIPT_BACKEND%\\build.bat" >> "%LOG_PATH%\\BackendLog.txt"
+
+			echo ======== The END build Java Backend stage =========
+		"""
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Build_Java_Backend"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e		
+    }
+	}
+
+	stage('Build_Java_Fronted') {
+		try{
+	    bat """
+			@echo off
+			echo ======== The begin build Java Fronted stage =======
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)					
+			set CI=false			
+			cd /d %JENKINS_SCRIPT_FRONTED%
+
+			"%JENKINS_SCRIPT_FRONTED%\\build.bat" >> "%LOG_PATH%\\FrontedLog.txt"
+			
+			echo ======== The END build Java Fronted stage =========
+
+		"""
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Build_Java_Fronted"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e		
+    }
+	}
+
+
+	stage('Unified_&&_Leo_Build_C#_C++') {
+		try{		
+	    bat """
+			@echo off
+			echo ========== The begin build standart stage =========
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)					
+			set SolutionDir=%JENKINS_PATH%\\services
+			cd /d %LOG_PATH%
+			rem for /F "delims=" %%i in ('dir /b') do (rmdir "%%i" /s/q || del "%%i" /s/q)
+			echo === wait for ControllerSimulator build ===
+			"%VS_PATH%" "%JENKINS_PATH%\\unified\\services\\ControllerSimulator.sln" /Rebuild "Release|x64" /Out "%LOG_PATH%\\ControllerSimulator.txt"	
+			echo === wait for Services build ===
+			dotnet build "%JENKINS_PATH%\\unified\\services\\Services.sln" >>"%LOG_PATH%\\Services.txt"	
+			dotnet build "%JENKINS_PATH%\\Leo\\Simulators\\LEO_Simulators.sln" >>"%LOG_PATH%\\LEO_Simulators.txt"	
+			dotnet build "%JENKINS_PATH%\\Leo\\Host\\services\\ServicesLeo.sln" >>"%LOG_PATH%\\ServicesLeo.txt"						
+			echo ========== The END build standart stage ===========
+		"""
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Unified_Build_C#_C++"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e		
+    }
+	}
+
+	stage('Build_Embedded_NuET_RF_Bootloader') {
+		try{		
+	    bat """
+			@echo off
+			echo ========= The begin build embedded stage ==========
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)					
+			rem "%JENKINS_PATH_MPLAB%\\NuET_RF_Bootloader.bat"
+			echo ========== The END build embedded stage ===========
+		"""
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Build_Embedded_NuET_RF_Bootloader"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e		
+    }
+	}		
+
+	stage('Build_Embedded_NuET_RF_App') {
+		try{		
+	    bat """
+			@echo off
+			echo ========= The begin build embedded stage ==========
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)					
+			rem "%JENKINS_PATH_MPLAB%\\NuET_RF_App.bat"
+			echo ========== The END build embedded stage ===========
+		"""
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Build_Embedded_NuET_RF_App"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e		
+    }
+	}		
+
+		stage('Build_Embedded_LeoInterfaces_samd21') {
+		try{			
+	    bat """
+			@echo off
+			echo ========= The begin build embedded stage ==========
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)					
+			rem "%JENKINS_PATH_MPLAB%\\LeoInterfaces_samd21.bat"
+			echo ========== The END build embedded stage ===========
+		"""
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Build_Embedded_LeoInterfaces_samd21"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e		
+    }
+	}
+
+	stage('Code_Analysis') {
+		try{		
+	    bat """
+			@echo off
+			echo ===== The begin Sonarqqube Code Analysis stage ====
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)		
+            if exist "%JENKINS_PATH%\\unified\\frontend\\node_modules" rd /S /Q "%JENKINS_PATH%\\unified\\frontend\\node_modules"
+			if exist "%JENKINS_PATH%\\unified\\backend\\node_modules" rd /S /Q "%JENKINS_PATH%\\unified\\backend\\node_modules"
+			call %SonarCaUnified_PATH%
+			echo = The END finished Sonarqqube Code Analysis stage =
+		"""
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Code_Analysis"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e		
+    }
+	}
+
+	stage('Deployment') {
+		try{
+	    bat """
+			@echo off
+			echo =========== The Begin Deployment stage ============
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)		
+			call "%JENKINS_PATH%\\scripts\\tech\\build_bin.bat" 10.11.235.35 
+			call "%JENKINS_PATH%\\scripts\\tech\\build_bin.bat" 10.11.235.36 
+			echo ============= The END Deployment stage ============	
+		"""			
+		}catch (Exception e){
+		println("Error cause Deployment == >: ${e}");	
+		bat """
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)		 
+		set "StageStatus=Deployment"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""	
+		throw e	
+    }
+	}
+
+	stage('Allure_tests'){
+		try{		
+			echo 'Run E2E Test pipeline!'
+			build job: 'Leo_VM_Autotest', parameters: [string(name: 'testType', value: 'smoke')]
+			}catch (Exception e){	
+			println("Error cause Allure_tests == >: ${e}");		
+			if ("${e}" == "org.jenkinsci.plugins.workflow.steps.FlowInterruptedException") {
+				println("Error cause Allure_tests-2 == >: ${e}");	
+			}else{
+				bat """
+				for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			 
+				set "StageStatus=Allure_tests"
+				python %SEND_MANAGER_MAIL% "%StageStatus%"
+			"""	
+			}		
+    }
+	}
+
+
+	stage('Archive_Version&&Reports_CA') {
+		try{
+	    bat """
+			@echo off
+			echo ========= The begin Archive stage ==========			
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)					
+			set OutputFolderName=%DATE:/=%_%time:~0,2%_%time:~3,2%_%time:~6,2%
+			set "VERSION=1.0.0.4"
+			set "OutputFolderName=Ver_%VERSION%_%OutputFolderName%"								
+			
+			if exist "%JENKINS_PATH_VERSION%\\VersionControl.txt"  (			
+			if not exist "%JENKINS_PATH_ARCHIVE%\\ReleaseLeo\\%OutputFolderName%" mkdir "%JENKINS_PATH_ARCHIVE%\\ReleaseLeo\\%OutputFolderName%"
+			)
+					
+			if exist "%JENKINS_PATH_VERSION%\\VersionControl.txt" (
+			 set JENKINS_PATH_ARCHIVE="%JENKINS_PATH_ARCHIVE%\\ReleaseLeo"
+			) 
+			
+			if not exist "%JENKINS_PATH_VERSION%\\VersionControl.txt" (
+			 set JENKINS_PATH_ARCHIVE="%JENKINS_PATH_ARCHIVE%\\Leo"
+			)  			
+			
+			set JENKINS_PATH_LOGS=F:\\jenkins\\workspace\\LeoPrj\\BuildLogs
+			
+			if exist "%JENKINS_PATH_ARCHIVE%\\systeminstall\\*.exe" (
+			del "%JENKINS_PATH_ARCHIVE%\\systeminstall\\*.exe" )
+						
+			if not exist "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\bin\\Integration\\bin" mkdir "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\bin\\Integration\\bin"
+			if not exist "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\Leo" mkdir "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\Leo"
+			if not exist "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\unified" mkdir "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\unified"
+
+			if exist "%JENKINS_PATH_ARCHIVE%\\systeminstall" rd /S /Q "%JENKINS_PATH_ARCHIVE%\\systeminstall"	 
+			if not exist "%JENKINS_PATH_ARCHIVE%\\systeminstall" mkdir 	"%JENKINS_PATH_ARCHIVE%\\systeminstall"	 			
+			copy "%LEOPACKAGES%\\nsi\\*.*" "%JENKINS_PATH_ARCHIVE%\\systeminstall"
+			powershell -Command "& {(Get-Content %JENKINS_PATH_ARCHIVE%\\systeminstall\\install.nsi) -Replace 'VERSION_PLACEHOLDER', $env:VERSION | Set-Content %JENKINS_PATH_ARCHIVE%\\systeminstall\\newsetup.nsi}"		
+			"%NSIS%" "%JENKINS_PATH_ARCHIVE%\\systeminstall\\newsetup.nsi"
+
+			echo D | xcopy "%JENKINS_PATH%\\bin" "%JENKINS_PATH_ARCHIVE%\\systeminstall\\Integration\\bin" /s /e
+			echo D | xcopy "%JENKINS_PATH%\\bin" "%JENKINS_PATH_ARCHIVE%\\systeminstall\\Integration\\bin" /s /e			
+			move "%JENKINS_PATH_ARCHIVE%\\systeminstall\\Integration\\bin\\DataBaseConfiguration" "%JENKINS_PATH_ARCHIVE%\\systeminstall\\Integration"
+			copy "%JENKINS_PATH_ARCHIVE%\\systeminstall\\runAll.bat" "%JENKINS_PATH_ARCHIVE%\\systeminstall\\Integration\\bin" /Y
+			copy "%LEOPACKAGES%\\*.*" "%JENKINS_PATH_ARCHIVE%\\systeminstall\\Integration"			
+			
+			echo D | xcopy "%JENKINS_PATH%\\bin" "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\bin\\Integration\\bin" /s /e
+			move "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\bin\\Integration\\bin\\DataBaseConfiguration" "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\bin\\Integration" 
+			copy "%JENKINS_PATH_ARCHIVE%\\systeminstall\\*.*" "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\bin\\" /Y
+			copy "%JENKINS_PATH_ARCHIVE%\\systeminstall\\runAll.bat" "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\bin\\Integration\\bin" /Y
+
+			echo D | xcopy "%JENKINS_PATH%\\Leo" "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\Leo" /s /e
+			echo D | xcopy "%JENKINS_PATH%\\unified" "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\unified" /s /e
+			echo %VERSION% > "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildOutput\\unified\\version.txt"
+
+			mkdir "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Leo-Cs-RF_Host_Simulator"
+			mkdir "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Leo-Cs-RF_MCU_Simulator"
+			mkdir "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Unified-Cs-NetCore"
+			mkdir "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Unified-Cpp"
+			rem mkdir "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Unified-Embedded"
+			mkdir "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Unified-Js-Backend"
+			mkdir "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Unified-Js-Fronted"
+
+			cd /d "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Leo-Cs-RF_Host_Simulator"
+			java -jar %SONAR_REPORT% -t "6a0db2874e06f33d82fca8cc5e4d5124d99c3d1c" -s http://xx.xx.xx.xx:9000 -p Leo-Cs-RF_Host_Simulator
+
+			cd /d "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Leo-Cs-RF_MCU_Simulator"
+			java -jar%SONAR_REPORT% -t "57f5d32d7b57cf8ae3690abcaa9fff596bda5d4e" -s http://xx.xx.xx.xx:9000 -p Leo-Cs-RF_MCU_Simulator
+
+			cd /d "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Unified-Cs-NetCore"
+			java -jar %SONAR_REPORT% -t "4a027c74a86385b7ee213950d05b291060b10cca" -s http://xx.xx.xx.xx:9000 -p Unified-Cs-NetCore
+
+			cd /d "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Unified-Cpp"
+			java -jar %SONAR_REPORT% -t "32b01dca3eaa258f830b5fe5edbc46d805fe16be" -s http://xx.xx.xx.xx:9000 -p Unified-Cpp
+
+			rem cd /d "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Unified-Embedded"
+			rem java -jar %SONAR_REPORT% -t "ff1142fa968e1c6cdea2a8565aec2fa230c2fad2" -s http://xx.xx.xx.xx:9000 -p Unified-Embedded
+
+			cd /d "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Unified-Js-Backend"
+			java -jar %SONAR_REPORT% -t "2bd55e628a0207e7abe35f064848c1ca1c739f72" -s http://xx.xx.xx.xx:9000 -p Unified-Js-Backend
+
+			cd /d "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\CodeAnalysisReports\\Unified-Js-Fronted"
+			java -jar %SONAR_REPORT% -t "3da59f993e66284195dd334cdfbf4902de1e7f33" -s http://xx.xx.xx.xx:9000 -p Unified-Js-Fronted
+
+			mkdir "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildLogs"
+			echo F | xcopy "%JENKINS_PATH_LOGS%" "%JENKINS_PATH_ARCHIVE%\\%OutputFolderName%\\BuildLogs" /s /e	
+
+			if not exist "%JENKINS_PATH_VERSION%\\VersionControl.txt" (
+			for /f "skip=5 delims=" %%a in (' dir "%JENKINS_PATH_ARCHIVE%\\" /o-d /b') do rd /S /Q "%JENKINS_PATH_ARCHIVE%\\%%a")
+
+			if exist "%JENKINS_PATH_VERSION%\\VersionControl.txt" (
+				cd /d "%JENKINS_PATH%\\unified"
+				git clean -fd 
+				git checkout develop
+				git tag -a Leo_V%VERSION% -m "The release version: Leo_V%VERSION%"
+				git push --tags
+
+				cd /d "%JENKINS_PATH%\\leo"
+				git clean -fd 
+				git checkout develop
+				git tag -a Leo_V%VERSION% -m "The release version: Leo_V%VERSION%"
+				git push --tags
+
+			 del "%JENKINS_PATH_VERSION%\\VersionControl.txt"		
+			) 				
+			echo ============== The END Archive stage ==============
+
+		"""
+		}catch (Exception e){	
+		bat """
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			 
+		set "StageStatus=Archive_Version&&Reports_CA"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e		
+    }
+	}
+
+	stage('Sending_Mail') {
+		try{		
+	    bat """
+			@echo off
+			echo =========== The begin send mail stage =============
+			for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)					
+			python %SEND_REPORT_MAIL%
+			python %SEND_REPORT_MAIL_LEO%
+			echo ============ The END send mail stage ==============
+		"""			
+		}catch (Exception e){	
+		bat """ 
+		for /f "tokens=*" %%a in (F:\\jenkins\\workspace\\Config\\leo.txt) do (set %%a)			
+		set "StageStatus=Sending_Mail"
+		python %SEND_MANAGER_MAIL% "%StageStatus%"
+		"""
+		throw e		
+    }
+	}
+
+
+	stage('Finish') {
+	    bat """
+			@echo off
+			echo ===================================================
+			echo The Finish all stages processing!!!
+			echo ===================================================
+		"""			
+	}
+
+}
+

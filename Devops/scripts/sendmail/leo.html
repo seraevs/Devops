@@ -1,0 +1,108 @@
+    <html>
+      <body style="background-color:powderblue">
+	  <div>
+		<table>
+		  <tr bgcolor="#000080" height="40">
+			<td style="color:white;text-align:center;font-size:28px" colspan="3">XXXXX <br> Nightly builds CI/CD Jenkins projects&nbsp;</td>
+		  </tr>
+		    <tr bgcolor="powderblue">		  
+			<td><br><br></td>
+		    </tr>		  
+		  <tr bgcolor={leo_color}>
+			<td style="color:white;text-align:center;" colspan="3">{leo_status_title}</td>
+		  </tr>		  
+		  <tr bgcolor="#728FCE">
+			<td style={a1}>Stage: Create_Version_Number</td>
+			<td style={a2}>Stage: Git_Clone_Leo</td>
+			<td style={a3}>Stage: Git_Clone_Unified</td>
+		  </tr>
+		    <tr bgcolor="powderblue">		  
+			<td></td>
+		    </tr>	
+		  <tr bgcolor="#728FCE">
+		  	<td style={a4}>Stage: Unit_Test</td>
+			<td style={a5}>Stage: Code_Analysis</td>
+			<td style={a6}>Stage: Build_Java_Backend</td>
+			<tr bgcolor="powderblue">		  
+			<td></td>
+		    </tr>	
+		  <tr bgcolor="#728FCE">
+			<td style={a7}>Stage: Build_Java_Fronted</td>
+			<td style={a8}>Stage: Unified_Build_C#_C++</td>
+			<td style={a9}>Stage: Build_Embedded_NuET_RF_Bootloader</td>
+		    </tr>
+		  <tr bgcolor="#728FCE">
+		  	<td style={a10}>Stage: Build_Embedded_NuET_RF_App</td>
+		  	<td style={a11}>Stage: Build_Embedded_LeoInterfaces_samd21</td>
+			<td style={a12}>Stage: Archive_Version&&Reports_CA</td>
+		    </tr>
+		  <tr bgcolor="#728FCE">
+			<td style={a13}>Stage: Deployment</td>
+			<td style={a14}>Stage: Allure_tests</td>
+			<td style={a15}>Stage: Sending_Mail</td>
+		    </tr>			
+		  </tr>
+		  <tr bgcolor="#728FCE">
+			<td style={a16}>Stage: Finish</td>
+		    </tr>
+		  </tr>
+		  </tr>		  
+		  <tr bgcolor="powderblue">		  
+			<td><br></td>
+		  </tr>
+
+		</table>
+<br><br>
+		<table>
+		  <tr bgcolor="#000080" height="40">
+			<td style="color:white;text-align:center" colspan="5">SonarQube Code Analisys Unified Project Reports is attached here.</td>
+		  </tr>
+		  <tr bgcolor="gray">
+			<td style="color:white;text-align:center">Security Hotspots.</td>
+			<td style="color:white;text-align:center">Unconfirmed.</td>
+			<td style="color:white;text-align:center">Issues.</td>
+			<td style="color:white;text-align:center">All.</td>
+			<td style="color:white;text-align:center">Links.</td>
+		  </tr>
+		  <tr bgcolor="#728FCE">
+			<td style={Cs_HotSpot}>{count_netcore} - Errors C# code.</td>
+			<td style={Cs_Unconfirmed}>{count_netcore_Unconfirmed} - Errors C# code.</td>
+			<td style={Cs_Issues}>{count_netcore_Issues} - Errors C# code.</td>
+			<td style={Cs_All}>{count_netcore_All} - Errors C# code.</td>
+
+		   <td style="color:black">Click on <a href="http://xx.xx.xx:9000/dashboard?id=Unified-Cs-NetCore">C# code reports</a>
+           for more information. </td>
+		  </tr>
+		  <tr bgcolor="#728FCE">
+		  	<td style={Cpp_HotSpot}>{count_Cpp} - Errors C++ code.</td>
+			<td style={Cpp_Unconfirmed}>{count_Cpp_Unconfirmed} - Errors C++ code.</td>
+			<td style={Cpp_Issues}>{count_Cpp_Issues} - Errors C++ code.</td>
+			<td style={Cpp_All}>{count_Cpp_All} - Errors C++ code.</td>
+		   <td style="color:black">Click on <a href="http://xx.xx.xx:9000/dashboard?id=Unified-Cpp">C++ code reports</a>
+           for more information</td>
+		  </tr>
+		  <tr bgcolor="#728FCE">
+			<td style={Fronted_HotSpot}>{count_Backend} - Errors Js-Backend code.</td>
+			<td style={Fronted_Unconfirmed}>{count_Fronted_Unconfirmed} - Errors Js-Backend code.</td>
+			<td style={Fronted_Issues}>{count_Backend_Issues} - Errors Js-Backend code.</td>
+			<td style={Fronted_All}>{count_Backend_All} - Errors Js-Backend code.</td>
+		   <td style="color:black">Click on <a href="http://xx.xx.xx:9000/dashboard?id=Unified-Js-Backend">Js-Backend code reports</a>
+           for more information.</td>
+		  </tr>
+		  <tr bgcolor="#728FCE">
+			<td style={Backend_HotSpot}>{count_Fronted} - Errors Js-Fronted code.</td>
+			<td style={Backend_Unconfirmed}>{count_Backend_Unconfirmed} - Errors Js-Fronted code.</td>
+			<td style={Backend_Issues}>{count_Fronted_Issues} - Errors Js-Fronted code.</td>
+			  <td style={Backend_All}>{count_Fronted_All} - Errors Js-Fronted code.</td>
+		   <td style="color:black">Click on <a href="http://xx.xx.xx:9000/dashboard?id=Unified-Js-Fronted">Js-Fronted code reports</a>
+           for more information.</td>
+		  </tr>
+		</table>	  
+		</div>
+       <br>Best Regards,<br>
+        Sergey Yvstigneev.<br>
+        Devops Engineer,<br>
+        sergey.yvstigneev@.com<br>
+        www..com<br>
+      </body>
+    </html>
